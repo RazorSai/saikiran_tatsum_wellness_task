@@ -13,6 +13,8 @@ class _CountriesFavoritesScreenState extends State<CountriesFavoritesScreen> {
 
   var allScreens = [CountriesScreen(), FavoritesScreen()];
 
+  int selectedIndex = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -31,12 +33,15 @@ class _CountriesFavoritesScreenState extends State<CountriesFavoritesScreen> {
         controller: controller,
         physics: NeverScrollableScrollPhysics(),
       ),
-      bottomNavigationBar: bottomNavigationBar(),
+      bottomNavigationBar: bottomNavigationBar(context),
     );
   }
 
-  Widget bottomNavigationBar() {
+  Widget bottomNavigationBar(BuildContext context) {
     return BottomNavigationBar(
+      selectedItemColor: Theme.of(context).primaryColor,
+      unselectedItemColor: Colors.grey.shade700,
+      currentIndex: selectedIndex,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.list),
@@ -45,6 +50,9 @@ class _CountriesFavoritesScreenState extends State<CountriesFavoritesScreen> {
         BottomNavigationBarItem(icon: Icon(Icons.star), label: "Favorites")
       ],
       onTap: (index) {
+        setState(() {
+          selectedIndex = index;
+        });
         controller.animateToPage(index,
             duration: Duration(milliseconds: 100), curve: Curves.ease);
       },
