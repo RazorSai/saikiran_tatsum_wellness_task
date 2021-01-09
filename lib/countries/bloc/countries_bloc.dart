@@ -86,6 +86,9 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
 
   /*Get list of all countries from api*/
   Stream<CountriesState> loadCountries() async* {
+    if (allCountriesList.length > 0) {
+      allCountriesList = List();
+    }
     yield CountriesLoading();
     try {
       /*Check if internet connection is available or not.*/
@@ -123,7 +126,7 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
               /*
               * Here we get list of favorite countries added by the user*/
               List<CountriesModel> favoriteCountries =
-                  await _favoritesRepository.getListOfFavoritesCountries();
+              await _favoritesRepository.getListOfFavoritesCountries();
 
               /*
               * Here we iterate through each of the favorite country
@@ -132,8 +135,8 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
               if (favoriteCountries.length > 0) {
                 for (var favoriteCountry in favoriteCountries) {
                   CountriesModel countryExists = countries.singleWhere(
-                      (element) =>
-                          element.countryCode == favoriteCountry.countryCode,
+                          (element) =>
+                      element.countryCode == favoriteCountry.countryCode,
                       orElse: () => null);
                   if (countryExists != null) {
                     countryExists.isFavorite = true;
