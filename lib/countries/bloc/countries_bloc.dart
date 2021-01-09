@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:bloc/bloc.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:equatable/equatable.dart';
+import 'package:http/http.dart' as http;
 import 'package:tatsam_wellness_flutter_task/countries/model/countries_model.dart';
 import 'package:tatsam_wellness_flutter_task/global/repository/favorites_repository.dart';
-import 'package:connectivity/connectivity.dart';
 
 part 'countries_event.dart';
-
 part 'countries_state.dart';
 
 class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
@@ -58,6 +58,25 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
           endLimit = allCountriesList.length;
         }
         var list = allCountriesList.getRange(setIndex, endLimit).toList();
+        /*
+              * Here we get list of favorite countries added by the user*/
+        List<CountriesModel> favoriteCountries =
+            await _favoritesRepository.getListOfFavoritesCountries();
+
+        /*
+              * Here we iterate through each of the favorite country
+              * and set isFavorite boolean to true
+              * */
+        if (favoriteCountries.length > 0) {
+          for (var favoriteCountry in favoriteCountries) {
+            CountriesModel countryExists = list.singleWhere(
+                (element) => element.countryCode == favoriteCountry.countryCode,
+                orElse: () => null);
+            if (countryExists != null) {
+              countryExists.isFavorite = true;
+            }
+          }
+        }
         yield (CountriesPaginationLoaded(list));
       }
     } catch (e) {
